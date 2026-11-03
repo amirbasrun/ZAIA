@@ -20,18 +20,48 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@study/ui/components/sidebar";
-import { ChevronsUpDownIcon, LogOutIcon, ContactRound } from "lucide-react";
+import { Skeleton } from "@study/ui/components/skeleton";
+import { ChevronsUpDownIcon, ContactRound, LogOutIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 
-export const NavUser = ({
-  user,
-}: {
-  user: {
-    name: string;
-    email: string;
-    avatar: string;
-  };
-}) => {
+import { authClient } from "@/lib/auth-client";
+
+export const NavUser = () => {
   const { isMobile } = useSidebar();
+  const router = useRouter();
+  const { data: session, isPending } = authClient.useSession();
+
+  const handleSignOut = async () => {
+    await authClient.signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          router.push("/auth");
+        },
+      },
+    });
+  };
+
+  if (isPending) {
+    return (
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton size="lg" disabled>
+            <Skeleton className="size-8" />
+            <div className="grid flex-1 gap-1 text-left">
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-3 w-32" />
+            </div>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    );
+  }
+
+  const user = session?.user;
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <SidebarMenu>
@@ -39,8 +69,10 @@ export const NavUser = ({
         <DropdownMenu>
           <DropdownMenuTrigger render={<SidebarMenuButton size="lg" />}>
             <Avatar>
-              <AvatarImage src={user.avatar} alt={user.name} />
-              <AvatarFallback>CN</AvatarFallback>
+              <AvatarImage src={user.image ?? undefined} alt={user.name} />
+              <AvatarFallback>
+                {user.name.slice(0, 2).toUpperCase()}
+              </AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
               <span className="truncate font-medium">{user.name}</span>
@@ -58,8 +90,13 @@ export const NavUser = ({
               <DropdownMenuLabel>
                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                   <Avatar>
-                    <AvatarImage src={user.avatar} alt={user.name} />
-                    <AvatarFallback>CN</AvatarFallback>
+                    <AvatarImage
+                      src={user.image ?? undefined}
+                      alt={user.name}
+                    />
+                    <AvatarFallback>
+                      {user.name.slice(0, 2).toUpperCase()}
+                    </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-medium">{user.name}</span>
@@ -74,7 +111,11 @@ export const NavUser = ({
                 <ContactRound />
                 Contact us
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  void handleSignOut();
+                }}
+              >
                 <LogOutIcon />
                 Log out
               </DropdownMenuItem>
