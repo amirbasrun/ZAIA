@@ -4,6 +4,7 @@ import type { NextConfig } from "next";
 const withVarlock = varlockNextConfigPlugin();
 
 const nextConfig: NextConfig = {
+  devIndicators: false,
   cacheComponents: true,
   partialPrefetching: true,
   reactCompiler: true,
