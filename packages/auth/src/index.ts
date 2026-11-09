@@ -23,6 +23,11 @@ export const createAuth = (env: AuthConfig, database: Database) =>
       provider: "postgresql",
     }),
     emailAndPassword: { enabled: true },
+    user: {
+      deleteUser: {
+        enabled: true,
+      },
+    },
     plugins: [
       polar({
         client: createPolarClient(env),
