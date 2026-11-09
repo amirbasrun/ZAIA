@@ -8,6 +8,7 @@ import {
   SidebarRail,
 } from "@study/ui/components/sidebar";
 import { BookOpenIcon, Settings, TvIcon, VideoIcon } from "lucide-react";
+import Link from "next/link";
 import type { ComponentProps } from "react";
 
 import { NavMain } from "@/components/nav-main";
@@ -38,12 +39,15 @@ const data = {
   ],
 };
 
-export const AppSidebar = ({
-  ...props
-}: ComponentProps<typeof Sidebar>) => (
+export const AppSidebar = ({ ...props }: ComponentProps<typeof Sidebar>) => (
   <Sidebar collapsible="icon" {...props}>
-    <SidebarHeader className="justify-start">
-      <div className="ml-2 text-lg font-semibold">Faceless Study</div>
+    <SidebarHeader className="group-data-[collapsible=icon]:hidden">
+      <Link
+        href="/series"
+        className="px-2 py-1.5 text-lg font-semibold transition-opacity hover:opacity-80"
+      >
+        Faceless Study
+      </Link>
     </SidebarHeader>
     <SidebarContent>
       <NavMain items={data.navMain} />
